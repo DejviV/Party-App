@@ -68,6 +68,7 @@ namespace Web.Controllers
             return View(ticket);
         }
 
+
         // POST: Ticket/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
