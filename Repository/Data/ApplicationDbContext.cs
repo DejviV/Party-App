@@ -24,6 +24,39 @@ namespace Repository.Data
             builder.Entity<AppUser>()
                 .Property(u => u.Role)
                 .HasConversion<string>();
+
+            builder.Entity<Attendee>()
+                .HasOne(a => a.User)
+                .WithMany()           // AppUser does not necessarily have a collection of Attendees
+                .HasForeignKey(a => a.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Establishment>()
+                .HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Ticket>()
+                .HasOne(t => t.User)
+                .WithMany()
+                .HasForeignKey(t => t.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Party -> Establishment: keep cascade (delete party deletes its tickets)
+            builder.Entity<Party>()
+                .HasOne(p => p.Establishment)
+                .WithMany(e => e.Parties)
+                .HasForeignKey(p => p.EstablishmentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Ticket -> Party: cascade when party deleted
+            builder.Entity<Ticket>()
+                .HasOne(t => t.Party)
+                .WithMany(p => p.Tickets)
+                .HasForeignKey(t => t.PartyId)
+                .OnDelete(DeleteBehavior.Cascade);
+        
         }
 
     }

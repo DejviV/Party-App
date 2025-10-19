@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Repository;
 using Repository.Data;
+using Service.Interface;
+using Service.Implementation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,10 @@ builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireCo
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddTransient<IPartyService, PartyService>();
+builder.Services.AddTransient<IAttendeeService, AttendeeService>();
+builder.Services.AddTransient<ITicketService, TicketService>();
+builder.Services.AddTransient<IEstablishmentService, EstablishmentService>();
 
 var app = builder.Build();
 

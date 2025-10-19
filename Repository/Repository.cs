@@ -59,6 +59,9 @@ namespace Repository
             return query.Select(selector).AsEnumerable();
         }
 
+        //TODO
+        //Ask about the differences between insert and update and if im messing up
+        //the database by having an id already made in the controller.
         public T Insert(T entity)
         {
             _context.Add(entity);
