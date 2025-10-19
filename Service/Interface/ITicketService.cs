@@ -10,8 +10,9 @@ namespace Service.Interface
     public interface ITicketService
     {
         List<Ticket> GetAll();
+        List<Ticket> GetAllByUserId(string userId);
         Ticket? GetById(Guid Id);
         Ticket DeleteById(Guid Id);
-        Task<Ticket> BuyTicket(int Price, string userId, Guid partyId);
+        Ticket BuyTicket(Ticket ticket);
     }
 }

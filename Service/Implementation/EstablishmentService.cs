@@ -25,6 +25,12 @@ namespace Service.Implementation
         {
             return _Repository.Get(selector: x => x, predicate: x => x.Id == Id);
         }
+
+        public Establishment GetByUserId(string userId)
+        {
+            return _Repository.Get(selector: x=>x, predicate: x => x.UserId == userId);
+        }
+
         public Establishment Add(Establishment establishment)
         {
             establishment.Id = Guid.NewGuid();

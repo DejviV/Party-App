@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Domain.Models;
+using Microsoft.AspNetCore.Identity;
 using Service.Interface;
 
 namespace Web.Controllers
@@ -11,14 +12,18 @@ namespace Web.Controllers
     {
         private readonly IPartyService _partyService;
         private readonly IEstablishmentService _establishmentService;
+        private readonly UserManager<AppUser> _userManager;
 
-        public PartyController(IPartyService partyService, IEstablishmentService establishmentService)
+        public PartyController(IPartyService partyService, IEstablishmentService establishmentService, UserManager<AppUser> userManager)
         {
             _partyService = partyService;
             _establishmentService = establishmentService;
+            _userManager = userManager;
         }
 
         // GET: Party
+        //This stays, it is neccesarry for the attendee user
+        //Need to give a user the ability to view all parties
         public IActionResult Index()
         {
             var list = _partyService.GetAll();
@@ -26,6 +31,8 @@ namespace Web.Controllers
         }
 
         // GET: Party/Details/5
+        //This stays, it is neccesarry for the attendee user
+        //Need to give a user the ability to view all parties
         public IActionResult Details(Guid? id)
         {
             if (id == null) return NotFound();
@@ -43,24 +50,26 @@ namespace Web.Controllers
         }
 
         // GET: Party/Create
+        //Create controllers have been changed and updated
         public IActionResult Create()
         {
-            PopulateEstablishmentsSelect();
             return View();
         }
 
         // POST: Party/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("Name,StartTime,EndTime,Description,PictureURL,EstablishmentId,Id")] Party party)
+        
+        public IActionResult Create([Bind("Name,StartTime,EndTime,Description,PictureURL")] Party party)
         {
             if (!ModelState.IsValid)
-            {
-                PopulateEstablishmentsSelect(party.EstablishmentId);
+            { 
                 return View(party);
             }
-
-            if (party.Id == Guid.Empty) party.Id = Guid.NewGuid();
+           var establishment = _establishmentService.GetByUserId(_userManager.GetUserId(User));
+            party.Id = Guid.NewGuid();
+            party.Establishment = establishment;
+            party.EstablishmentId = establishment.Id;
 
             _partyService.Add(party);
             return RedirectToAction(nameof(Index));
@@ -74,7 +83,6 @@ namespace Web.Controllers
             var party = _partyService.GetById(id.Value);
             if (party == null) return NotFound();
 
-            PopulateEstablishmentsSelect(party.EstablishmentId);
             return View(party);
         }
 
@@ -87,10 +95,8 @@ namespace Web.Controllers
 
             if (!ModelState.IsValid)
             {
-                PopulateEstablishmentsSelect(party.EstablishmentId);
                 return View(party);
             }
-
             try
             {
                 _partyService.Update(party);
@@ -133,14 +139,6 @@ namespace Web.Controllers
         private bool PartyExists(Guid id)
         {
             return _partyService.GetById(id) != null;
-        }
-
-        private void PopulateEstablishmentsSelect(Guid? selectedId = null)
-        {
-            var list = _establishmentService.GetAll()
-                .Select(e => new { e.Id, Display = (e.Name ?? e.Address) })
-                .ToList();
-            ViewData["EstablishmentId"] = new SelectList(list, "Id", "Display", selectedId);
         }
     }
 }

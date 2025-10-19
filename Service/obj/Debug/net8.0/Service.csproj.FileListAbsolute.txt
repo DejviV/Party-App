@@ -32,3 +32,20 @@ C:\Users\PC\Desktop\Integrirani proekti\Party-App\Service\obj\Debug\net8.0\Servi
 C:\Users\PC\Desktop\Integrirani proekti\Party-App\Service\obj\Debug\net8.0\refint\Service.dll
 C:\Users\PC\Desktop\Integrirani proekti\Party-App\Service\obj\Debug\net8.0\Service.pdb
 C:\Users\PC\Desktop\Integrirani proekti\Party-App\Service\obj\Debug\net8.0\ref\Service.dll
+C:\Users\pc\Desktop\Party-App\Service\bin\Debug\net8.0\Service.deps.json
+C:\Users\pc\Desktop\Party-App\Service\bin\Debug\net8.0\Service.dll
+C:\Users\pc\Desktop\Party-App\Service\bin\Debug\net8.0\Service.pdb
+C:\Users\pc\Desktop\Party-App\Service\bin\Debug\net8.0\Domain.dll
+C:\Users\pc\Desktop\Party-App\Service\bin\Debug\net8.0\Repository.dll
+C:\Users\pc\Desktop\Party-App\Service\bin\Debug\net8.0\Domain.pdb
+C:\Users\pc\Desktop\Party-App\Service\bin\Debug\net8.0\Repository.pdb
+C:\Users\pc\Desktop\Party-App\Service\obj\Debug\net8.0\Service.csproj.AssemblyReference.cache
+C:\Users\pc\Desktop\Party-App\Service\obj\Debug\net8.0\Service.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\pc\Desktop\Party-App\Service\obj\Debug\net8.0\Service.AssemblyInfoInputs.cache
+C:\Users\pc\Desktop\Party-App\Service\obj\Debug\net8.0\Service.AssemblyInfo.cs
+C:\Users\pc\Desktop\Party-App\Service\obj\Debug\net8.0\Service.csproj.CoreCompileInputs.cache
+C:\Users\pc\Desktop\Party-App\Service\obj\Debug\net8.0\Service.csproj.Up2Date
+C:\Users\pc\Desktop\Party-App\Service\obj\Debug\net8.0\Service.dll
+C:\Users\pc\Desktop\Party-App\Service\obj\Debug\net8.0\refint\Service.dll
+C:\Users\pc\Desktop\Party-App\Service\obj\Debug\net8.0\Service.pdb
+C:\Users\pc\Desktop\Party-App\Service\obj\Debug\net8.0\ref\Service.dll

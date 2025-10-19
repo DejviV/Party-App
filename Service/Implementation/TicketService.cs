@@ -1,5 +1,6 @@
 ﻿using Domain.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Repository;
 using Service.Interface;
 using System;
@@ -29,7 +30,7 @@ namespace Service.Implementation
 
         public Ticket? GetById(Guid Id)
         {
-            return _Repository.Get(selector: x => x, predicate: x => x.Id == Id);
+            return _Repository.Get(selector: x => x, predicate: x => x.Id == Id, include: y => y.Include(x => x.Party));
         }
 
         public Ticket DeleteById(Guid Id)
@@ -38,21 +39,14 @@ namespace Service.Implementation
             return _Repository.Delete(ticket);
         }
 
-        public async Task<Ticket> BuyTicket(int Price, string UserId, Guid PartyId)
+        public Ticket BuyTicket(Ticket ticket)
         {
-            var party = _PartyRepository.Get(selector: x => x, predicate: x => x.Id == PartyId);
-            var user = await _UserManager.FindByIdAsync(UserId);
-            //Chatgpt says user should have await and BuyTicket should be async
-            var ticket = new Ticket
-            {
-                Id = Guid.NewGuid(),
-                Party = party,
-                User = user,
-                PartyId = PartyId,
-                UserId = UserId,
-                Price = Price
-            };
             return _Repository.Insert(ticket);
+        }
+
+        public List<Ticket> GetAllByUserId(string userId)
+        {
+            return _Repository.GetAll(selector: x => x, predicate: x => x.UserId == userId).ToList();
         }
     }
 }

@@ -11,6 +11,7 @@ namespace Service.Interface
     {
         List<Establishment> GetAll();
         Establishment? GetById(Guid Id);
+        Establishment GetByUserId(string userId);
         Establishment Update(Establishment establishment);
         Establishment DeleteById(Guid Id);
         Establishment Add(Establishment establishment);

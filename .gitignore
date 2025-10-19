@@ -1,8 +1,9 @@
-﻿.vs
-Domain/bin
+﻿Domain/bin
 Domain/obj
 Repository/bin
 Repository/obj
 Service/bin
+Service/obj
 Web/bin
 Web/obj
+.vs

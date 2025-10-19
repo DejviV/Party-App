@@ -36,45 +36,13 @@ namespace Web.Controllers
             var ticket = _ticketService.GetById(id.Value);
             if (ticket == null) return NotFound();
 
-            // ensure navigation props are populated for the view
-            if (ticket.Party == null && ticket.PartyId != Guid.Empty)
-            {
-                ticket.Party = _partyService.GetById(ticket.PartyId);
-            }
-
-            if (ticket.User == null && !string.IsNullOrEmpty(ticket.UserId))
-            {
-                ticket.User = _userManager.FindByIdAsync(ticket.UserId).GetAwaiter().GetResult();
-            }
-
             return View(ticket);
         }
 
         // GET: Ticket/Create
-        public IActionResult Create()
-        {
-            PopulatePartiesAndUsersSelects();
-            return View();
-        }
+        //Used to be here XD
 
-        // POST: Ticket/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("Price,UserId,PartyId,Id")] Ticket ticket)
-        {
-            if (!ModelState.IsValid)
-            {
-                PopulatePartiesAndUsersSelects(ticket.PartyId, ticket.UserId);
-                return View(ticket);
-            }
-
-            if (ticket.Id == Guid.Empty) ticket.Id = Guid.NewGuid();
-
-            //TODO, fix this is not right
-            //_ticketService.Add(ticket);
-            return RedirectToAction(nameof(Index));
-        }
-
+        
         // Where Edit used to be
         //Other edit too
         
@@ -114,19 +82,7 @@ namespace Web.Controllers
             return _ticketService.GetById(id) != null;
         }
 
-        // Helper to populate the two SelectLists used by Create/Edit views
-        private void PopulatePartiesAndUsersSelects(Guid? selectedPartyId = null, string selectedUserId = null)
-        {
-            var parties = _partyService.GetAll()
-                .Select(p => new { p.Id, p.Name })
-                .ToList();
-            ViewData["PartyId"] = new SelectList(parties, "Id", "Name", selectedPartyId);
-
-            var users = _userManager.Users
-                .Select(u => new { u.Id, Display = (u.UserName ?? u.Email) })
-                .ToList();
-            ViewData["UserId"] = new SelectList(users, "Id", "Display", selectedUserId);
-        }
+        
         // TODO: make a buy controller
     }
 }

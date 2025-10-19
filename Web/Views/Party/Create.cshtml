@@ -4,7 +4,7 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<h2>Create</h2>
 
 <h4>Party</h4>
 <hr />
@@ -36,10 +36,6 @@
                 <label asp-for="PictureURL" class="control-label"></label>
                 <input asp-for="PictureURL" class="form-control" />
                 <span asp-validation-for="PictureURL" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EstablishmentId" class="control-label"></label>
-                <select asp-for="EstablishmentId" class ="form-control" asp-items="ViewBag.EstablishmentId"></select>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
