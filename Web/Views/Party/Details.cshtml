@@ -44,11 +44,12 @@
             @Html.DisplayNameFor(model => model.Establishment)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Establishment.Address)
+            @Html.DisplayFor(model => model.Establishment.Name)
         </dd>
     </dl>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-controller="Ticket" asp-action="Buy" asp-route-partyId="@Model.Id" class="btn btn-success"> Buy Ticket (@Model.TicketPrice ден)</a> |
     <a asp-action="Index">Back to List</a>
 </div>

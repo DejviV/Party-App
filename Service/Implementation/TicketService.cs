@@ -41,6 +41,13 @@ namespace Service.Implementation
 
         public Ticket BuyTicket(Ticket ticket)
         {
+            var party = _PartyRepository.Get(selector: x=>x, predicate: x=>x.Id==ticket.PartyId);
+
+            //if (party.TicketsSold >= party.Establishment.Capacity)
+            //Breaking news, you dont know how to do async
+            if (party.Tickets.Count >= party.Establishment.Capacity)
+                throw new Exception("No more tickets available!");
+
             return _Repository.Insert(ticket);
         }
 

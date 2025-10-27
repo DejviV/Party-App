@@ -1,10 +1,11 @@
-﻿using System;
-using System.Linq;
+﻿using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Domain.Models;
 using Service.Interface;
-using Microsoft.AspNetCore.Identity;
+using System;
+using System.Linq;
 
 namespace Web.Controllers
 {
@@ -41,6 +42,7 @@ namespace Web.Controllers
 
         // GET: Ticket/Create
         //Used to be here XD
+        //replaced with buy cuz logic
 
         
         // Where Edit used to be
@@ -83,7 +85,30 @@ namespace Web.Controllers
             return _ticketService.GetById(id) != null;
         }
 
-        
-        // TODO: make a buy controller
+
+        [Authorize(Roles = "Attendee")]
+        public async Task<IActionResult> Buy(Guid partyId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            var party = _partyService.GetById(partyId);
+
+            if (party == null || user == null)
+                return NotFound();
+
+            var ticket = new Ticket
+            {
+                Id = Guid.NewGuid(),
+                PartyId = party.Id,
+                Party = party,
+                UserId = user.Id,
+                User = user,
+                Price = party.TicketPrice
+            };
+
+            _ticketService.BuyTicket(ticket);
+
+            return RedirectToAction("Index");
+        }
     }
 }
