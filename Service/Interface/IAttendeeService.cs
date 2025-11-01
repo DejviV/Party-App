@@ -14,5 +14,6 @@ namespace Service.Interface
         Attendee Update(Attendee attendee);
         Attendee DeleteById(Guid Id);
         Attendee Add(Attendee attendee);
+        Attendee GetByUserId(string userId);
     }
 }

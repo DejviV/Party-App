@@ -41,5 +41,10 @@ namespace Service.Implementation
         {
             return _Repository.Update(attendee);
         }
+
+        public Attendee GetByUserId(string userId)
+        {
+            return _Repository.Get(selector: x => x, predicate: x => x.UserId == userId);
+        }
     }
 }

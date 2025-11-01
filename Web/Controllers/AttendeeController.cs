@@ -1,11 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Domain.Models;
 using Service.Interface;
-using Microsoft.AspNetCore.Identity;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Web.Controllers
 {
@@ -28,22 +29,37 @@ namespace Web.Controllers
         }
 
         // GET: Attendee/Details/5
-        public IActionResult Details(Guid? id)
+        [Authorize]
+        public async Task<IActionResult> Details()
         {
-            if (id == null) return NotFound();
+            var user = await _userManager.GetUserAsync(User);
 
-            var attendee = _service.GetById(id.Value);
-            if (attendee == null) return NotFound();
-
-            // ensure User is populated for the view (service may or may not include it)
-            if (attendee.User == null && !string.IsNullOrEmpty(attendee.UserId))
-            {
-                var user = _userManager.FindByIdAsync(attendee.UserId).GetAwaiter().GetResult();
-                attendee.User = user;
-            }
+            var attendee = _service.GetByUserId(user.Id);
+            if (attendee == null)
+                return NotFound();
 
             return View(attendee);
         }
+        //TODO Just in case this is a good idea
+        //// Admin: view any attendee by ID
+        //[Authorize(Roles = "Admin")]
+        //public IActionResult Details(Guid id)
+        //{
+        //    var attendee = _service.GetById(id);
+        //    if (attendee == null) return NotFound();
+        //    return View(attendee);
+        //}
+
+        //// Attendee: view own profile
+        //[Authorize(Roles = "Attendee")]
+        //public async Task<IActionResult> MyProfile()
+        //{
+        //    var user = await _userManager.GetUserAsync(User);
+        //    var attendee = _service.GetByUserId(user.Id);
+        //    if (attendee == null) return NotFound();
+        //    return View("Details", attendee);
+        //}
+
 
         // GET: Attendee/Create
         public IActionResult Create()
