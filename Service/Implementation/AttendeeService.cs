@@ -1,4 +1,5 @@
 ﻿using Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using Repository;
 using Service.Interface;
 using System;
@@ -23,7 +24,7 @@ namespace Service.Implementation
 
         public Attendee? GetById(Guid Id)
         {
-            return _Repository.Get(selector: x => x, predicate: x => x.Id == Id);
+            return _Repository.Get(selector: x => x, predicate: x => x.Id == Id, include: y=>y.Include(x=>x.User));
         }
         public Attendee Add(Attendee attendee)
         {

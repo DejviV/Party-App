@@ -64,33 +64,23 @@ namespace Web.Controllers
         // GET: Attendee/Create
         public IActionResult Create()
         {
-            // populate users dropdown (Id, display name)
-            var users = _userManager.Users
-                .Select(u => new { u.Id, Display = (u.UserName ?? u.Email) })
-                .ToList();
-
-            ViewData["UserId"] = new SelectList(users, "Id", "Display");
             return View();
         }
 
         // POST: Attendee/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("Name,Age,UserId,Id")] Attendee attendee)
+        public async Task<IActionResult> Create([Bind("Age")] Attendee attendee)
         {
-            if (!ModelState.IsValid)
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
             {
-                // re-populate users
-                var users = _userManager.Users
-                    .Select(u => new { u.Id, Display = (u.UserName ?? u.Email) })
-                    .ToList();
-                ViewData["UserId"] = new SelectList(users, "Id", "Display", attendee.UserId);
-                return View(attendee);
+                return NotFound();
             }
-
-            // ensure id (if your BaseEntity doesn't set it automatically)
-            if (attendee.Id == Guid.Empty) attendee.Id = Guid.NewGuid();
-
+            attendee.Id = Guid.NewGuid();
+            attendee.UserId = user.Id;
+            attendee.User = user;
+            attendee.Name = user.Name;
             _service.Add(attendee);
             return RedirectToAction(nameof(Index));
         }
@@ -102,43 +92,20 @@ namespace Web.Controllers
 
             var attendee = _service.GetById(id.Value);
             if (attendee == null) return NotFound();
-
-            var users = _userManager.Users
-                .Select(u => new { u.Id, Display = (u.UserName ?? u.Email) })
-                .ToList();
-            ViewData["UserId"] = new SelectList(users, "Id", "Display", attendee.UserId);
-
             return View(attendee);
         }
 
         // POST: Attendee/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Guid id, [Bind("Name,Age,UserId,Id")] Attendee attendee)
+        public IActionResult Edit(Guid id, [Bind("Name,Age,Id")] Attendee attendee)
         {
             if (id != attendee.Id) return NotFound();
 
-            if (!ModelState.IsValid)
-            {
-                var users = _userManager.Users
-                    .Select(u => new { u.Id, Display = (u.UserName ?? u.Email) })
-                    .ToList();
-                ViewData["UserId"] = new SelectList(users, "Id", "Display", attendee.UserId);
-                return View(attendee);
-            }
-
-            try
-            {
                 _service.Update(attendee);
-            }
-            catch (Exception ex)
-            {
-                // If your service throws a concurrency exception, adapt here.
-                // We try to detect if entity still exists:
-                if (_service.GetById(attendee.Id) == null)
-                    return NotFound();
-                throw;
-            }
+            //why can't i just add  var user = await _userManager.GetUserAsync(User); here,
+            //then go user.password = attendee.password (lets imagine there is a passowrd in the bind and edit.cshtml)
+
 
             return RedirectToAction(nameof(Index));
         }
@@ -146,17 +113,12 @@ namespace Web.Controllers
         // GET: Attendee/Delete/5
         public IActionResult Delete(Guid? id)
         {
+            //ask teacher about the delete function and can you delete the whole user with it, or if you choose to delete the
+            //profile can you just delete the attendee as well
             if (id == null) return NotFound();
 
             var attendee = _service.GetById(id.Value);
             if (attendee == null) return NotFound();
-
-            // populate attendee.User if missing
-            if (attendee.User == null && !string.IsNullOrEmpty(attendee.UserId))
-            {
-                var user = _userManager.FindByIdAsync(attendee.UserId).GetAwaiter().GetResult();
-                attendee.User = user;
-            }
 
             return View(attendee);
         }
@@ -167,7 +129,6 @@ namespace Web.Controllers
         public IActionResult DeleteConfirmed(Guid id)
         {
             var deleted = _service.DeleteById(id);
-            // you can check deleted == null to detect failure if service returns null on missing
             return RedirectToAction(nameof(Index));
         }
 
