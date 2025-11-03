@@ -34,45 +34,43 @@ namespace Web.Controllers
             var establishment = _service.GetById(id.Value);
             if (establishment == null) return NotFound();
 
-            // populate User nav if missing (view expects .User)
-            if (establishment.User == null && !string.IsNullOrEmpty(establishment.UserId))
-            {
-                var user = _userManager.FindByIdAsync(establishment.UserId).GetAwaiter().GetResult();
-                establishment.User = user;
-            }
-
             return View(establishment);
         }
 
         // GET: Establishment/Create
         public IActionResult Create()
         {
-            var users = _userManager.Users
-                .Select(u => new { u.Id, Display = (u.UserName ?? u.Email) })
-                .ToList();
-            ViewData["UserId"] = new SelectList(users, "Id", "Display");
             return View();
         }
 
         // POST: Establishment/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("Name,Address,Capacity,PictureURL,UserId,Id")] Establishment establishment)
+        public async  Task<IActionResult> Create([Bind("Address,Capacity,PictureURL,Id")] Establishment establishment)
         {
-            if (!ModelState.IsValid)
+            //if (!ModelState.IsValid)
+            //{
+            //    establishment.Id = Guid.NewGuid();
+            //    establishment.UserId = user.Id;
+            //    establishment.User = user;
+            //    establishment.Name = user.Name;
+            //    _service.Add(establishment);
+            //    
+            //} Ask teacher which one is correct and why
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
             {
-                // repopulate users for the view
-                var users = _userManager.Users
-                    .Select(u => new { u.Id, Display = (u.UserName ?? u.Email) })
-                    .ToList();
-                ViewData["UserId"] = new SelectList(users, "Id", "Display", establishment.UserId);
-                return View(establishment);
+                return NotFound();
             }
-
-            if (establishment.Id == Guid.Empty) establishment.Id = Guid.NewGuid();
+            establishment.Id = Guid.NewGuid();
+            establishment.UserId = user.Id;
+            establishment.User = user;
+            establishment.Name = user.Name;
 
             _service.Add(establishment);
             return RedirectToAction(nameof(Index));
+            //This is the return part that was generated while the other one is the one you copied from attendee,
+            //check that one too its about the if (!ModelState.IsValid)
         }
 
         // GET: Establishment/Edit/5
@@ -83,41 +81,19 @@ namespace Web.Controllers
             var establishment = _service.GetById(id.Value);
             if (establishment == null) return NotFound();
 
-            var users = _userManager.Users
-                .Select(u => new { u.Id, Display = (u.UserName ?? u.Email) })
-                .ToList();
-            ViewData["UserId"] = new SelectList(users, "Id", "Display", establishment.UserId);
-
             return View(establishment);
         }
 
         // POST: Establishment/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Guid id, [Bind("Name,Address,Capacity,PictureURL,UserId,Id")] Establishment establishment)
+        public IActionResult Edit(Guid id, [Bind("Name,Address,Capacity,PictureURL,Id")] Establishment establishment)
         {
             if (id != establishment.Id) return NotFound();
 
-            if (!ModelState.IsValid)
-            {
-                var users = _userManager.Users
-                    .Select(u => new { u.Id, Display = (u.UserName ?? u.Email) })
-                    .ToList();
-                ViewData["UserId"] = new SelectList(users, "Id", "Display", establishment.UserId);
-                return View(establishment);
-            }
-
-            try
-            {
+            //Tuka imashe try/catch generirano, no bidejki samo user-ot bi mozel da smeni neshto za svojot establishment
+            //ne gledam prichna za concurency
                 _service.Update(establishment);
-            }
-            catch (Exception)
-            {
-                // if service provides concurrency exceptions, handle specifically.
-                if (_service.GetById(establishment.Id) == null)
-                    return NotFound();
-                throw;
-            }
 
             return RedirectToAction(nameof(Index));
         }
@@ -130,14 +106,10 @@ namespace Web.Controllers
             var establishment = _service.GetById(id.Value);
             if (establishment == null) return NotFound();
 
-            if (establishment.User == null && !string.IsNullOrEmpty(establishment.UserId))
-            {
-                var user = _userManager.FindByIdAsync(establishment.UserId).GetAwaiter().GetResult();
-                establishment.User = user;
-            }
-
             return View(establishment);
         }
+        //Delete e komplicirano bidejki bi sakal so brishenje na establishment da moze da se izbrishe i user-ot
+        //ili obratno, no ne znam kolku e toa mozno
 
         // POST: Establishment/Delete/5
         [HttpPost, ActionName("Delete")]

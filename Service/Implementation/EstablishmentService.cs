@@ -1,4 +1,5 @@
 ﻿using Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using Repository;
 using Service.Interface;
 using System;
@@ -28,7 +29,7 @@ namespace Service.Implementation
 
         public Establishment GetByUserId(string userId)
         {
-            return _Repository.Get(selector: x=>x, predicate: x => x.UserId == userId);
+            return _Repository.Get(selector: x=>x, predicate: x => x.UserId == userId, include: y=>y.Include(x=>x.User));
         }
 
         public Establishment Add(Establishment establishment)
