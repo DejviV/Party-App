@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Service.Interface;
+using StackExchange.Redis;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,6 +31,8 @@ namespace Web.Controllers
 
         // GET: Attendee/Details/5
         [Authorize]
+        //[Authorize(Roles = "Attendee")]
+        //prashaj zoshto role ne raboti a roles raboti koga ti imash role kako promenliva
         public async Task<IActionResult> Details()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -40,25 +43,6 @@ namespace Web.Controllers
 
             return View(attendee);
         }
-        //TODO Just in case this is a good idea
-        //// Admin: view any attendee by ID
-        //[Authorize(Roles = "Admin")]
-        //public IActionResult Details(Guid id)
-        //{
-        //    var attendee = _service.GetById(id);
-        //    if (attendee == null) return NotFound();
-        //    return View(attendee);
-        //}
-
-        //// Attendee: view own profile
-        //[Authorize(Roles = "Attendee")]
-        //public async Task<IActionResult> MyProfile()
-        //{
-        //    var user = await _userManager.GetUserAsync(User);
-        //    var attendee = _service.GetByUserId(user.Id);
-        //    if (attendee == null) return NotFound();
-        //    return View("Details", attendee);
-        //}
 
 
         // GET: Attendee/Create
@@ -70,6 +54,7 @@ namespace Web.Controllers
         // POST: Attendee/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create([Bind("Age")] Attendee attendee)
         {
             var user = await _userManager.GetUserAsync(User);
@@ -82,31 +67,6 @@ namespace Web.Controllers
             attendee.User = user;
             attendee.Name = user.Name;
             _service.Add(attendee);
-            return RedirectToAction(nameof(Index));
-        }
-
-        // GET: Attendee/Edit/5
-        public IActionResult Edit(Guid? id)
-        {
-            if (id == null) return NotFound();
-
-            var attendee = _service.GetById(id.Value);
-            if (attendee == null) return NotFound();
-            return View(attendee);
-        }
-
-        // POST: Attendee/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(Guid id, [Bind("Name,Age,Id")] Attendee attendee)
-        {
-            if (id != attendee.Id) return NotFound();
-
-                _service.Update(attendee);
-            //why can't i just add  var user = await _userManager.GetUserAsync(User); here,
-            //then go user.password = attendee.password (lets imagine there is a passowrd in the bind and edit.cshtml)
-
-
             return RedirectToAction(nameof(Index));
         }
 

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Domain.Models;
 using Service.Interface;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Web.Controllers
 {
@@ -46,6 +47,7 @@ namespace Web.Controllers
         // POST: Establishment/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async  Task<IActionResult> Create([Bind("Address,Capacity,PictureURL,Id")] Establishment establishment)
         {
             //if (!ModelState.IsValid)
@@ -68,6 +70,8 @@ namespace Web.Controllers
             establishment.Name = user.Name;
 
             _service.Add(establishment);
+            //Najdi kako da gi napravish ovie RedirectToAction da pokazuvaat kon
+            //site zabavi shto se organizirani od strana na establishemnt
             return RedirectToAction(nameof(Index));
             //This is the return part that was generated while the other one is the one you copied from attendee,
             //check that one too its about the if (!ModelState.IsValid)
@@ -87,6 +91,7 @@ namespace Web.Controllers
         // POST: Establishment/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public IActionResult Edit(Guid id, [Bind("Name,Address,Capacity,PictureURL,Id")] Establishment establishment)
         {
             if (id != establishment.Id) return NotFound();

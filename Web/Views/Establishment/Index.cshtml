@@ -43,7 +43,8 @@
                 @Html.DisplayFor(modelItem => item.Capacity)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PictureURL)
+                    @* @Html.DisplayFor(modelItem => item.PictureURL) *@
+                <img src="@item.PictureURL" />
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.User.Id)

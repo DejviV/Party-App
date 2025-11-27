@@ -57,16 +57,6 @@ namespace Web.Controllers
             var ticket = _ticketService.GetById(id.Value);
             if (ticket == null) return NotFound();
 
-            if (ticket.Party == null && ticket.PartyId != Guid.Empty)
-            {
-                ticket.Party = _partyService.GetById(ticket.PartyId);
-            }
-
-            if (ticket.User == null && !string.IsNullOrEmpty(ticket.UserId))
-            {
-                ticket.User = _userManager.FindByIdAsync(ticket.UserId).GetAwaiter().GetResult();
-            }
-
             return View(ticket);
         }
 
@@ -74,6 +64,7 @@ namespace Web.Controllers
         // POST: Ticket/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public IActionResult DeleteConfirmed(Guid id)
         {
             _ticketService.DeleteById(id);
@@ -86,7 +77,9 @@ namespace Web.Controllers
         }
 
 
-        [Authorize(Roles = "Attendee")]
+        //[Authorize(Roles = "Attendee")] again, zoshto roles raboti a role ne raboti koga mojata promenliva e role
+        [Authorize]
+        //Podobro stavi vo servis
         public async Task<IActionResult> Buy(Guid partyId)
         {
             var user = await _userManager.GetUserAsync(User);

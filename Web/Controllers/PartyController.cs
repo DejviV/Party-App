@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Service.Interface;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Web.Controllers
 {
@@ -59,6 +60,7 @@ namespace Web.Controllers
         // POST: Party/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         
         public IActionResult Create([Bind("Name,StartTime,EndTime,Description,PictureURL")] Party party)
         {
@@ -72,6 +74,8 @@ namespace Web.Controllers
             party.EstablishmentId = establishment.Id;
 
             _partyService.Add(party);
+            //Ovde treba da vrati na establishment Front page shto bi
+            //bilo site zabavi shto se organizirani od nivna strana
             return RedirectToAction(nameof(Index));
         }
 
@@ -89,6 +93,7 @@ namespace Web.Controllers
         // POST: Party/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public IActionResult Edit(Guid id, [Bind("Name,StartTime,EndTime,Description,PictureURL,EstablishmentId,Id")] Party party)
         {
             if (id != party.Id) return NotFound();
@@ -112,6 +117,7 @@ namespace Web.Controllers
         }
 
         // GET: Party/Delete/5
+
         public IActionResult Delete(Guid? id)
         {
             if (id == null) return NotFound();
@@ -130,6 +136,7 @@ namespace Web.Controllers
         // POST: Party/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public IActionResult DeleteConfirmed(Guid id)
         {
             _partyService.DeleteById(id);

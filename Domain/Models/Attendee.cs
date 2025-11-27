@@ -10,7 +10,7 @@ namespace Domain.Models
     {
         public string Name { get; set; }
         public int Age {  get; set; }
-        public List<Ticket> Tickets { get; set; }
+        public List<Ticket>? Tickets { get; set; }
         public string UserId { get; set; }
         public AppUser User { get; set; }
     }
