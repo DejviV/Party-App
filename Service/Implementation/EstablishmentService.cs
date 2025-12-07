@@ -1,4 +1,5 @@
 ﻿using Domain.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Repository;
 using Service.Interface;
@@ -13,9 +14,11 @@ namespace Service.Implementation
     public class EstablishmentService : IEstablishmentService
     {
         private readonly IRepository<Establishment> _Repository;
+
         public EstablishmentService(IRepository<Establishment> repository)
         {
             _Repository = repository;
+            
         }
         public List<Establishment> GetAll()
         {

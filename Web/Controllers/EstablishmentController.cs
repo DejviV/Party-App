@@ -92,15 +92,20 @@ namespace Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public IActionResult Edit(Guid id, [Bind("Name,Address,Capacity,PictureURL,Id")] Establishment establishment)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Address,Capacity,PictureURL,Id")] Establishment establishment)
         {
             if (id != establishment.Id) return NotFound();
+            var user = await _userManager.GetUserAsync(User);
+
 
             //Tuka imashe try/catch generirano, no bidejki samo user-ot bi mozel da smeni neshto za svojot establishment
             //ne gledam prichna za concurency
-                _service.Update(establishment);
+            establishment.UserId = user.Id;
+            establishment.User = user;
+            _service.Update(establishment);
 
             return RedirectToAction(nameof(Index));
+            //Edit neshto ne funkcionira ne se naogja (ispadna treba i indexot, namerno ne raboti, taka treba da bide)
         }
 
         // GET: Establishment/Delete/5
@@ -109,6 +114,7 @@ namespace Web.Controllers
             if (id == null) return NotFound();
 
             var establishment = _service.GetById(id.Value);
+
             if (establishment == null) return NotFound();
 
             return View(establishment);

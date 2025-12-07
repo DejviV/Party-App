@@ -15,13 +15,10 @@ namespace Service.Implementation
     {
         private readonly IRepository<Ticket> _Repository;
         private readonly IRepository<Party> _PartyRepository;
-        private readonly UserManager<AppUser> _UserManager;
-        public TicketService(IRepository<Ticket> Repository, IRepository<Party> PartyRepository, UserManager<AppUser> userManager)
+        public TicketService(IRepository<Ticket> Repository, IRepository<Party> PartyRepository)
         {
             _Repository = Repository;
             _PartyRepository = PartyRepository;
-            _UserManager = userManager;
-
         }
         public List<Ticket> GetAll()
         {
