@@ -80,14 +80,14 @@ namespace Web.Controllers
         //[Authorize(Roles = "Attendee")] again, zoshto roles raboti a role ne raboti koga mojata promenliva e role
         [Authorize]
         //Podobro stavi vo servis
+        [Authorize(Roles = "Attendee")]
         public async Task<IActionResult> Buy(Guid partyId)
         {
             var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
 
             var party = _partyService.GetById(partyId);
-
-            if (party == null || user == null)
-                return NotFound();
+            if (party == null) return NotFound();
 
             var ticket = new Ticket
             {
@@ -99,9 +99,19 @@ namespace Web.Controllers
                 Price = party.TicketPrice
             };
 
-            _ticketService.BuyTicket(ticket);
+            try
+            {
+                _ticketService.BuyTicket(ticket);
+            }
+            catch (Exception ex)
+            {
+                // show message to user (using TempData for simplicity)
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("Details", "Party", new { id = partyId });
+            }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "Ticket");
         }
+
     }
 }

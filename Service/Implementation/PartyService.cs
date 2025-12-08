@@ -52,9 +52,9 @@ namespace Service.Implementation
         public List<Party> GetByUserId(string userId)
         {
             var establishment = _EstablishmentService.GetByUserId(userId);
-            
-
-            return _Repository.GetAll(selector: x => x, predicate: x=>x.EstablishmentId==establishment.Id).ToList();
+          
+            return _Repository.GetAll(selector: x => x, predicate: x=>x.EstablishmentId==establishment.Id,
+                include: q => q.Include(p => p.Establishment).Include(p => p.Tickets)).ToList();
         }
     }
 }

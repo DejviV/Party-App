@@ -1,11 +1,12 @@
-﻿using System;
-using System.Linq;
+﻿using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Domain.Models;
-using Microsoft.AspNetCore.Identity;
+using Service.Implementation;
 using Service.Interface;
-using Microsoft.AspNetCore.Authorization;
+using System;
+using System.Linq;
 
 namespace Web.Controllers
 {
@@ -25,11 +26,23 @@ namespace Web.Controllers
         // GET: Party
         //This stays, it is neccesarry for the attendee user
         //Need to give a user the ability to view all parties
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            if (User.Identity.IsAuthenticated && User.IsInRole("Establishment"))
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user != null)
+                {
+                    var myParties = _partyService.GetByUserId(user.Id); // your service returns List<Party>
+                    return View(myParties);
+                }
+            }
+
+            // default: show all parties
             var list = _partyService.GetAll();
             return View(list);
         }
+
 
         // GET: Party/Details/5
         //This stays, it is neccesarry for the attendee user
@@ -58,26 +71,30 @@ namespace Web.Controllers
         }
 
         // POST: Party/Create
+
+        [Authorize(Roles = "Establishment")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
-        
-        public IActionResult Create([Bind("Name,StartTime,EndTime,Description,PictureURL")] Party party)
+        public async Task<IActionResult> Create([Bind("Name,StartTime,EndTime,Description,PictureURL,TicketPrice,Capacity")] Party party)
         {
             if (!ModelState.IsValid)
-            { 
                 return View(party);
-            }
-           var establishment = _establishmentService.GetByUserId(_userManager.GetUserId(User));
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
+
+            var establishment = _establishmentService.GetByUserId(user.Id);
+            if (establishment == null)
+                return BadRequest("No establishment linked to current user.");
+
             party.Id = Guid.NewGuid();
-            party.Establishment = establishment;
             party.EstablishmentId = establishment.Id;
+            party.Establishment = establishment;
 
             _partyService.Add(party);
-            //Ovde treba da vrati na establishment Front page shto bi
-            //bilo site zabavi shto se organizirani od nivna strana
             return RedirectToAction(nameof(Index));
         }
+
 
         // GET: Party/Edit/5
         public IActionResult Edit(Guid? id)

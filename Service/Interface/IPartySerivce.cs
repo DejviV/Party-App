@@ -14,6 +14,7 @@ namespace Service.Interface
         Party Update(Party party);
         Party DeleteById(Guid Id);
         Party Add(Party party);
+        List<Party> GetByUserId(string userId);
     }
 
 }

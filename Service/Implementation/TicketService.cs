@@ -38,16 +38,27 @@ namespace Service.Implementation
 
         public Ticket BuyTicket(Ticket ticket)
         {
-            var party = _PartyRepository.Get(selector: x=>x, predicate: x=>x.Id==ticket.PartyId);
+          
+            // load party with tickets and establishment included
+            var party = _PartyRepository.Get(
+                selector: x => x, predicate: x => x.Id == ticket.PartyId,
+                include: q => q.Include(p => p.Tickets).Include(p => p.Establishment)
+            );
 
-            //if (party.TicketsSold >= party.Establishment.Capacity)
-            //Breaking news, you dont know how to do async
-            if (party.Tickets.Count >= party.Establishment.Capacity)
+            if (party == null)
+                throw new Exception("Party not found.");
+
+            var ticketsCount = party.Tickets?.Count ?? 0;
+
+            if (ticketsCount >= party.Capacity)
                 throw new Exception("No more tickets available!");
+
+            if (ticket.Price == 0)
+                ticket.Price = party.TicketPrice;
 
             return _Repository.Insert(ticket);
         }
-
+        
         public List<Ticket> GetAllByUserId(string userId)
         {
             return _Repository.GetAll(selector: x => x, predicate: x => x.UserId == userId).ToList();

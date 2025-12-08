@@ -4,6 +4,11 @@
     ViewData["Title"] = "Details";
 }
 
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
 <h1>Details</h1>
 
 <div>
