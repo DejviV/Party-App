@@ -28,6 +28,6 @@ namespace Domain.Models
         //Failed async dream, ask teacher
         //public int TicketsSold  { get; set; } = 0;
 
-        public ICollection<Ticket> Tickets { get; set; }
+        public ICollection<Ticket>? Tickets { get; set; }
     }
 }

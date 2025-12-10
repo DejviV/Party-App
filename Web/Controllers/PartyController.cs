@@ -77,8 +77,8 @@ namespace Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,StartTime,EndTime,Description,PictureURL,TicketPrice,Capacity")] Party party)
         {
-            if (!ModelState.IsValid)
-                return View(party);
+            //if (!ModelState.IsValid)
+                //return View(party);
 
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Challenge();
