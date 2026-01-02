@@ -31,7 +31,7 @@ namespace Service.Implementation
 
         public Party? GetById(Guid Id)
         {
-            return _Repository.Get(selector: x=>x, predicate:x=>x.Id == Id);
+            return _Repository.Get(selector: x=>x, predicate:x=>x.Id == Id, include: q => q.Include(p => p.Establishment));
         }
         public Party Add(Party party)
         {
