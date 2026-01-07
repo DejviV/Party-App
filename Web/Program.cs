@@ -1,10 +1,11 @@
+using Domain.DTO;
 using Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Repository;
 using Repository.Data;
-using Service.Interface;
 using Service.Implementation;
+using Service.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +36,10 @@ builder.Services.AddTransient<IPartyService, PartyService>();
 builder.Services.AddTransient<IAttendeeService, AttendeeService>();
 builder.Services.AddTransient<ITicketService, TicketService>();
 builder.Services.AddTransient<IEstablishmentService, EstablishmentService>();
+
+builder.Services.Configure<OpenWeatherOptions>(builder.Configuration.GetSection("OpenWeather"));
+builder.Services.AddHttpClient<IWeatherService, WeatherService>();
+
 
 var app = builder.Build();
 

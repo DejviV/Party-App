@@ -15,12 +15,14 @@ namespace Web.Controllers
         private readonly IPartyService _partyService;
         private readonly IEstablishmentService _establishmentService;
         private readonly UserManager<AppUser> _userManager;
+        private readonly IWeatherService _weatherService;
 
-        public PartyController(IPartyService partyService, IEstablishmentService establishmentService, UserManager<AppUser> userManager)
+        public PartyController(IPartyService partyService, IEstablishmentService establishmentService, UserManager<AppUser> userManager, IWeatherService weatherService)
         {
             _partyService = partyService;
             _establishmentService = establishmentService;
             _userManager = userManager;
+            _weatherService = weatherService;
         }
 
         // GET: Party
@@ -164,5 +166,26 @@ namespace Web.Controllers
         {
             return _partyService.GetById(id) != null;
         }
+
+        [HttpGet]
+        public async Task<IActionResult> WeatherSimple(Guid id)
+        {
+            var party = _partyService.GetById(id);
+            if (party == null) return NotFound();
+
+            var establishment = party.Establishment ?? _establishmentService.GetById(party.EstablishmentId);
+            if (establishment == null) return BadRequest("Establishment not found.");
+
+            var city = establishment.Address?.Trim();
+            if (string.IsNullOrEmpty(city)) return BadRequest("City not provided for establishment.");
+
+            // convert to UTC - important: ensure your Party times are consistent
+            var startUtc = party.StartTime.ToUniversalTime();
+            var endUtc = party.EndTime.ToUniversalTime();
+
+            var dto = await _weatherService.GetSimpleWeatherAsync(city, startUtc, endUtc);
+            return Json(dto); // returns { averageTempC, willRain, message }
+        }
+
     }
 }

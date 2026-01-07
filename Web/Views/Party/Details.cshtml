@@ -35,7 +35,7 @@
         </dd>
 
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Establishment.Address)
+            @Html.DisplayNameFor(model => model.Establishment)
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Establishment.Address)
@@ -61,7 +61,44 @@
         </dd>
     </dl>
 </div>
+
+
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
+<<div id="weatherBox">
+    <button id="checkWeatherBtn" class="btn btn-info">Check weather for this party</button>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('checkWeatherBtn').addEventListener('click', function() {
+            const url = '@Url.Action("WeatherSimple", "Party", new { id = Model.Id })';
+
+            fetch(url, { method: 'GET', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(r => r.json())
+                .then(data => {
+                    if (!data) {
+                        document.getElementById('weatherBox').innerHTML = '<div class="alert alert-warning">No data</div>';
+                        return;
+                    }
+                    const html = `
+                        <div class="card p-2">
+                            <div><strong>Weather estimate:</strong></div>
+                            <div>${data.message}</div>
+                            <div><strong>Avg temp:</strong> ${data.averageTempC?.toFixed(1)} °C</div>
+                            <div><strong>Rain expected:</strong> ${data.willRain ? "Yes" : "No"}</div>
+                        </div>
+                    `;
+                    document.getElementById('weatherBox').innerHTML = html;
+                })
+                .catch(err => {
+                    document.getElementById('weatherBox').innerHTML = '<div class="alert alert-danger">Error: ' + err.message + '</div>';
+                });
+        });
+    </script>
+}
+
+
+
