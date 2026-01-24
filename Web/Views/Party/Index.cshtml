@@ -3,9 +3,14 @@
 @{
     ViewData["Title"] = "Index";
 }
-
-<h1>Index</h1>
-
+@if (User.IsInRole("Establishment"))
+    {
+    <h1>My Parties</h1>
+    }
+ @if (User.IsInRole("Attendee"))
+    {
+    <h1>All Parties</h1>
+    }
 <p>
     <a asp-action="Create">Create New</a>
 </p>
@@ -27,10 +32,6 @@
             <th>
                 @Html.DisplayNameFor(model => model.PictureURL)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Establishment)
-            </th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -45,9 +46,6 @@
             <td>
                 @Html.DisplayFor(modelItem => item.EndTime)
             </td>
-
-            @* stavi za adresa del *@
-
             <td>
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
@@ -55,14 +53,16 @@
                 @Html.DisplayFor(modelItem => item.PictureURL)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Establishment.Name)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                 <a asp-controller="Ticket" asp-action="Buy" asp-route-partyId="@item.Id" class="btn btn-success"> Buy Ticket (@item.TicketPrice ден)</a> |
-
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary">Details</a>
+            @if (User.IsInRole("Establishment"))
+            {
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a> 
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-secondary">Delete</a>
+            }
+            @if (User.IsInRole("Attendee"))
+            {
+                <a asp-controller="Ticket" asp-action="Buy" asp-route-partyId="@item.Id" class="btn btn-success"> Buy Ticket (@item.TicketPrice ден)</a> 
+            }
             </td>
         </tr>
 }

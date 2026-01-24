@@ -39,14 +39,6 @@ namespace Web.Controllers
 
             return View(ticket);
         }
-
-        // GET: Ticket/Create
-        //Used to be here XD
-        //replaced with buy cuz logic
-
-        
-        // Where Edit used to be
-        //Other edit too
         
 
         // GET: Ticket/Delete/5
@@ -77,9 +69,7 @@ namespace Web.Controllers
         }
 
 
-        //[Authorize(Roles = "Attendee")] again, zoshto roles raboti a role ne raboti koga mojata promenliva e role
         [Authorize]
-        //Podobro stavi vo servis
         [Authorize(Roles = "Attendee")]
         public async Task<IActionResult> Buy(Guid partyId)
         {
@@ -105,7 +95,6 @@ namespace Web.Controllers
             }
             catch (Exception ex)
             {
-                // show message to user (using TempData for simplicity)
                 TempData["Error"] = ex.Message;
                 return RedirectToAction("Details", "Party", new { id = partyId });
             }

@@ -20,17 +20,14 @@ namespace Service.Implementation
         {
             var res = new SimpleWeatherDto();
 
-            try
-            {
                 if (string.IsNullOrWhiteSpace(city))
                 {
                     res.Message = "City not provided.";
                     return res;
                 }
 
-                // 1) Geocoding (city -> lat/lon)
-                var geoUrl =
-                    $"{_opts.GeocodingUrl}?q={Uri.EscapeDataString(city)}&limit=1&appid={_opts.ApiKey}";
+                
+                var geoUrl = $"{_opts.GeocodingUrl}?q={Uri.EscapeDataString(city)}&limit=1&appid={_opts.ApiKey}";
 
                 var geoJson = await _http.GetStringAsync(geoUrl);
                 using var geoDoc = JsonDocument.Parse(geoJson);
@@ -46,9 +43,8 @@ namespace Service.Implementation
                 var lat = geo.GetProperty("lat").GetDouble();
                 var lon = geo.GetProperty("lon").GetDouble();
 
-                // 2) Forecast (3-hour intervals)
-                var forecastUrl =
-                    $"{_opts.OneCallUrl}?lat={lat}&lon={lon}&units=metric&appid={_opts.ApiKey}";
+                
+                var forecastUrl = $"{_opts.OneCallUrl}?lat={lat}&lon={lon}&units=metric&appid={_opts.ApiKey}";
 
                 var forecastJson = await _http.GetStringAsync(forecastUrl);
                 using var doc = JsonDocument.Parse(forecastJson);
@@ -71,14 +67,14 @@ namespace Service.Implementation
                     if (tsUtc < startUtc || tsUtc > endUtc)
                         continue;
 
-                    // temperature
+                    
                     if (item.TryGetProperty("main", out var main) &&
                         main.TryGetProperty("temp", out var temp))
                     {
                         temps.Add(temp.GetDouble());
                     }
 
-                    // rain volume
+                    
                     if (item.TryGetProperty("rain", out var rain) &&
                         rain.TryGetProperty("3h", out var rain3h) &&
                         rain3h.GetDouble() > 0)
@@ -86,7 +82,7 @@ namespace Service.Implementation
                         willRain = true;
                     }
 
-                    // weather description fallback
+                   
                     if (item.TryGetProperty("weather", out var weatherArr) &&
                         weatherArr.ValueKind == JsonValueKind.Array &&
                         weatherArr.GetArrayLength() > 0)
@@ -116,12 +112,6 @@ namespace Service.Implementation
                     $"Avg temp: {res.AverageTempC:0.#} °C. Rain expected: {(willRain ? "Yes" : "No")}.";
 
                 return res;
-            }
-            catch (Exception ex)
-            {
-                res.Message = "Error fetching weather: " + ex.Message;
-                return res;
-            }
         }
     }
 }

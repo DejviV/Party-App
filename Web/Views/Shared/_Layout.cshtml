@@ -31,6 +31,7 @@ Probaj doma
                             {
                                 <li class="nav-item"><a class="nav-link text-dark" asp-controller="Attendee" asp-action="Create">Create Attendee</a></li>
                                 <li class="nav-item"><a class="nav-link text-dark" asp-controller="Ticket" asp-action="Index">My Tickets</a></li>
+                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="Party" asp-action="Index">All Parties</a></li>
                             }
                             if (User.IsInRole("Establishment"))
                             {
@@ -39,16 +40,9 @@ Probaj doma
                                 <li class="nav-item"><a class="nav-link text-dark" asp-controller="Party" asp-action="Index">My Parties</a></li>
                             }
 
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Party" asp-action="Index">All Parties</a></li>
+                            
                         }
-                    <ul>
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+                    
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>

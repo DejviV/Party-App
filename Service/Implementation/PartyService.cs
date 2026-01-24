@@ -26,7 +26,7 @@ namespace Service.Implementation
         }
         public List<Party> GetAll()
         {
-            return _Repository.GetAll(selector: x=>x).ToList();
+            return _Repository.GetAll(selector: x=>x, include: q => q.Include(p => p.Establishment)).ToList();
         }
 
         public Party? GetById(Guid Id)

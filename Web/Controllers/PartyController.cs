@@ -25,9 +25,7 @@ namespace Web.Controllers
             _weatherService = weatherService;
         }
 
-        // GET: Party
-        //This stays, it is neccesarry for the attendee user
-        //Need to give a user the ability to view all parties
+        
         public async Task<IActionResult> Index()
         {
             if (User.Identity.IsAuthenticated && User.IsInRole("Establishment"))
@@ -35,20 +33,16 @@ namespace Web.Controllers
                 var user = await _userManager.GetUserAsync(User);
                 if (user != null)
                 {
-                    var myParties = _partyService.GetByUserId(user.Id); // your service returns List<Party>
+                    var myParties = _partyService.GetByUserId(user.Id); 
                     return View(myParties);
                 }
             }
 
-            // default: show all parties
             var list = _partyService.GetAll();
             return View(list);
         }
 
 
-        // GET: Party/Details/5
-        //This stays, it is neccesarry for the attendee user
-        //Need to give a user the ability to view all parties
         public IActionResult Details(Guid? id)
         {
             if (id == null) return NotFound();
@@ -56,7 +50,6 @@ namespace Web.Controllers
             var party = _partyService.GetById(id.Value);
             if (party == null) return NotFound();
 
-            // ensure Establishment nav prop is populated for the view
             if (party.Establishment == null && party.EstablishmentId != Guid.Empty)
             {
                 party.Establishment = _establishmentService.GetById(party.EstablishmentId);
@@ -65,22 +58,19 @@ namespace Web.Controllers
             return View(party);
         }
 
-        // GET: Party/Create
-        //Create controllers have been changed and updated
+        
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Party/Create
 
         [Authorize(Roles = "Establishment")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,StartTime,EndTime,Description,PictureURL,TicketPrice,Capacity")] Party party)
         {
-            //if (!ModelState.IsValid)
-                //return View(party);
+           
 
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Challenge();
@@ -98,7 +88,6 @@ namespace Web.Controllers
         }
 
 
-        // GET: Party/Edit/5
         public IActionResult Edit(Guid? id)
         {
             if (id == null) return NotFound();
@@ -109,7 +98,6 @@ namespace Web.Controllers
             return View(party);
         }
 
-        // POST: Party/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
@@ -179,12 +167,11 @@ namespace Web.Controllers
             var city = establishment.Address?.Trim();
             if (string.IsNullOrEmpty(city)) return BadRequest("City not provided for establishment.");
 
-            // convert to UTC - important: ensure your Party times are consistent
             var startUtc = party.StartTime.ToUniversalTime();
             var endUtc = party.EndTime.ToUniversalTime();
 
             var dto = await _weatherService.GetSimpleWeatherAsync(city, startUtc, endUtc);
-            return Json(dto); // returns { averageTempC, willRain, message }
+            return Json(dto);
         }
 
     }

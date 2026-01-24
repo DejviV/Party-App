@@ -25,8 +25,6 @@ namespace Domain.Models
         public int TicketPrice { get; set; }
         [Required]
         public int Capacity { get; set; }
-        //Failed async dream, ask teacher
-        //public int TicketsSold  { get; set; } = 0;
 
         public ICollection<Ticket>? Tickets { get; set; }
     }

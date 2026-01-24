@@ -22,12 +22,12 @@ namespace Service.Implementation
         }
         public List<Ticket> GetAll()
         {
-            return _Repository.GetAll(selector: x => x).ToList();
+            return _Repository.GetAll(selector: x => x, include: y => y.Include(x => x.Party)).ToList();
         }
 
         public Ticket? GetById(Guid Id)
         {
-            return _Repository.Get(selector: x => x, predicate: x => x.Id == Id, include: y => y.Include(x => x.Party));
+            return _Repository.Get(selector: x => x, predicate: x => x.Id == Id, include: y => y.Include(x => x.Party).ThenInclude(x=>x.Establishment));
         }
 
         public Ticket DeleteById(Guid Id)
@@ -39,14 +39,10 @@ namespace Service.Implementation
         public Ticket BuyTicket(Ticket ticket)
         {
           
-            // load party with tickets and establishment included
             var party = _PartyRepository.Get(
                 selector: x => x, predicate: x => x.Id == ticket.PartyId,
-                include: q => q.Include(p => p.Tickets).Include(p => p.Establishment)
-            );
+                include: q => q.Include(p => p.Tickets));
 
-            if (party == null)
-                throw new Exception("Party not found.");
 
             var ticketsCount = party.Tickets?.Count ?? 0;
 
